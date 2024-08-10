@@ -1,11 +1,13 @@
 #include <string>
 
 template <typename type>
-void deallocate(type ** &v);
-template <typename type>
 type **allocate(type ** &v, const int nx, const int ny);
 template <typename type>
-type **allocate_cpp(type ** &v, const int nx, const int ny)
+type **allocate_cpp(type ** &v, const int nx, const int ny);
+template <typename type>
+type **allocate_column_major(type ** &v, const int nx, const int ny);
+template <typename type>
+void deallocate(type ** &v);
 template <typename type>
 void deallocate_cpp(type ** &v);
 
