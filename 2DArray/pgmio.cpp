@@ -29,6 +29,7 @@
 #include <string>
 #include <sstream>
 #include <cmath>
+#include <iomanip>
 
 /*  Routines to allocate/deallocate a contiguous storage on a 2D array
 */
@@ -36,9 +37,9 @@
 template <typename type>
 type **allocate(type ** &v, const int nx, const int ny)
 {
-  bigint nbytes = (bigint) sizeof(type) * nx * ny;
+  long int nbytes = (long int) sizeof(type) * nx * ny;
   type * data = (type *) malloc(nbytes);
-  nbytes = (bigint) sizeof(type *) * nx;
+  nbytes = (long int) sizeof(type *) * nx;
   v = (type **) malloc(nbytes);
 
   int n = 0;
@@ -57,7 +58,7 @@ type **allocate_cpp(type ** &v, const int nx, const int ny)
   type * data = new type[n];
   v = new type* [nx];
   
-  int n = 0;
+  n = 0;
   for (int i = 0; i < nx; i++)
     {
       v[i] = &data[n];
@@ -76,15 +77,15 @@ void deallocate_cpp(type ** &v)
 }
 
 template <typename type>
-type **allocate_column_major(type ** &v, const int nx, const int ny)
+type **allocate_row_major(type ** &v, const int nx, const int ny)
 {
-  bigint nbytes = (bigint) sizeof(type) * nx * ny;
+  long int nbytes = (long int) sizeof(type) * nx * ny;
   type * data = (type *) malloc(nbytes);
-  nbytes = (bigint) sizeof(type *) * ny;
+  nbytes = (long int) sizeof(type *) * ny;
   v = (type **) malloc(nbytes);
 
   int n = 0;
-  for (int j = 0; j < ny; i++)
+  for (int j = 0; j < ny; j++)
     {
       v[j] = &data[n];
       n += nx;
@@ -113,10 +114,12 @@ void pgmsize(std::string filename, int *nx, int *ny)
 
   std::string line;
   std::stringstream iss;
+  
+  file.open(filename,std::fstream::in);
 
-  if (file.open(filename,"r") == NULL)
+  if (!file.is_open())
   {
-    std::cerr << "pgmsize: cannot open << filename << std::endl;
+    std::cerr << "pgmsize: cannot open" << filename << std::endl;
     return ;
   }
 
@@ -125,7 +128,7 @@ void pgmsize(std::string filename, int *nx, int *ny)
   std::getline(file,line);
 
   iss << line;
-  iss >> nx >> ny;
+  iss >> *nx >> *ny;
 
   file.close();
 }
@@ -145,9 +148,11 @@ void pgmread(std::string filename, double ** v, int nx, int ny)
 
   int nxt, nyt;
 
-  if (file.open(filename,"r") == NULL)
+  file.open(filename,std::fstream::in);
+
+  if (!file.is_open())
   {
-    std::cerr << "pgmsize: cannot open << filename << std::endl;
+    std::cerr << "pgmsize: cannot open" << filename << std::endl;
     return ;
   }
 
@@ -166,18 +171,19 @@ void pgmread(std::string filename, double ** v, int nx, int ny)
   std::getline(file,line); // Maximum greyscale
 
   for (int j = 0; j < ny; j++)
+  {
+    std::getline(file,line);
+    iss.clear();
+    iss.str("");
+    iss << line;
+    for (int i = 0; i < nx ; i++)
     {
-      std::getline(file,line);
-      iss.clear();
-      iss.str("");
-      iss << line;
-      for (int i = 0; i < nx ; i++)
-        {
-          int n;
-          iss >> n;
-          v[i][j] = n;
-        }
+      int n;
+      iss >> n;
+      v[i][j] = n;
+    }
   file.close();
+  }
 }
 
 
@@ -198,7 +204,9 @@ void pgmwrite(std::string filename, double **x, int nx, int ny)
   double thresh = 255.0;
 
 
-  if (!file.open(filename,"w"))
+  file.open(filename,std::fstream::out);
+
+  if (!file.is_open())
   {
     std::cerr << "pgmwrite: cannot create" << filename << std::endl;
     return ;
@@ -211,14 +219,15 @@ void pgmwrite(std::string filename, double **x, int nx, int ny)
    *  Find the max and min absolute values of the array
    */
 
-  xmin = fabs(x[0]);
-  xmax = fabs(x[0]);
+  xmin = fabs(x[0][0]);
+  xmax = fabs(x[0][0]);
 
-  for (i=0; i < nx*ny; i++)
-  {
-    if (fabs(x[i]) < xmin) xmin = fabs(x[i]);
-    if (fabs(x[i]) > xmax) xmax = fabs(x[i]);
-  }
+  for (i=0; i < nx; i++)
+    for (j=0; j < ny; j++)
+    {
+       if (fabs(x[i][j]) < xmin) xmin = fabs(x[i][j]);
+       if (fabs(x[i][j]) > xmax) xmax = fabs(x[i][j]);
+    }
 
   if (xmin == xmax) xmin = xmax-1.0;
 
@@ -246,14 +255,14 @@ void pgmwrite(std::string filename, double **x, int nx, int ny)
       fval = thresh*((fabs(tmp)-xmin)/(xmax-xmin))+0.5;
       grey = (int) fval;
 
-      cout << std::left << std::setw(6) << grey;
+      file << std::left << std::setw(6) << grey;
 
-      if (0 == (k+1)%18) cout << std::endl;
+      if (0 == (k+1)%18) file << std::endl;
 
       k++;
     }
   }
 
-  if (0 != k%18) cout << std::endl;
+  if (0 != k%18) file << std::endl;
   file.close();
 }
