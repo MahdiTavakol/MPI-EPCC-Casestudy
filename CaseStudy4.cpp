@@ -33,8 +33,8 @@ int main(int argc, char** argv)
     filename = "edge" + to_string(M) + "x" + to_string(N) + ".pgm";
     pgmsize(filename, &M, &N);
 
-    Mp = M;
-    Np = N/size;
+    Mp = M/size;
+    Np = N;
 
     masterbuff = allocate(masterbuff,M,N);
     buff       = allocate(masterbuff,Mp,Np);
@@ -82,11 +82,7 @@ int main(int argc, char** argv)
 
         for (int i = 1; i < Mp+1; i++)
             for (int j = 1; j < Np+1; j++)
-            {
-                int indx0 = Np-(j-1)-1+Np*(i-1);
-                int indx1 = (Np+2) - j -1 + (Np+2)*i;
                 buff[i-1][j-1] = old[i][j];  
-            }
 
         MPI_Gather(buff[0], Mp*Np, MPI_DOUBLE,masterbuff[0],Mp*Np,MPI_DOUBLE,0,world);
         if (rank == 0)
