@@ -27,7 +27,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <stringstream>
+#include <sstream>
 #include <cmath>
 
 /*  Routines to allocate/deallocate a contiguous storage on a 2D array
