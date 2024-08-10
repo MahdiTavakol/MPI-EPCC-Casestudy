@@ -30,37 +30,8 @@
 #include <stringstream>
 #include <cmath>
 
-/*  Routine to allocate storage on a 2D array
+/*  Routines to allocate/deallocate a contiguous storage on a 2D array
 */
-
-template <typename type>
-void deallocate(type ** &v)
-{
-  if (v == nullptr) return;
-  free(v[0]);
-  free(v);
-  v = nullptr;
-}
-
-/*  Routine to allocate storage on a 2D array
-*/
-
-template <typename type>
-type **allocate_column_major(type ** &v, const int nx, const int ny)
-{
-  bigint nbytes = (bigint) sizeof(type) * nx * ny;
-  type * data = (type *) malloc(nbytes);
-  nbytes = (bigint) sizeof(type *) * ny;
-  v = (type **) malloc(nbytes);
-
-  int n = 0;
-  for (int j = 0; j < ny; i++)
-    {
-      v[j] = &data[n];
-      n += nx;
-    }
-  return v;
-}
 
 template <typename type>
 type **allocate(type ** &v, const int nx, const int ny)
@@ -101,6 +72,32 @@ void deallocate_cpp(type ** &v)
   if (v== nullptr) return;
   delete [] v[0];
   delete v;
+  v = nullptr;
+}
+
+template <typename type>
+type **allocate_column_major(type ** &v, const int nx, const int ny)
+{
+  bigint nbytes = (bigint) sizeof(type) * nx * ny;
+  type * data = (type *) malloc(nbytes);
+  nbytes = (bigint) sizeof(type *) * ny;
+  v = (type **) malloc(nbytes);
+
+  int n = 0;
+  for (int j = 0; j < ny; i++)
+    {
+      v[j] = &data[n];
+      n += nx;
+    }
+  return v;
+}
+
+template <typename type>
+void deallocate(type ** &v)
+{
+  if (v == nullptr) return;
+  free(v[0]);
+  free(v);
   v = nullptr;
 }
 
