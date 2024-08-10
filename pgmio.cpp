@@ -27,25 +27,24 @@
 #include <iostream>
 #include <fstream>
 #include <stringstream>
-#include <cstdlib>
 #include <cmath>
 
 /*  Routine to allocate storage on a 2D array
 */
 
-template (typename type)
+template <typename type>
 void deallocate(type ** &v)
 {
   if (v == nullptr) return;
-  sfree(v[0]);
-  sfree(v);
+  free(v[0]);
+  free(v);
   v = nullptr;
 }
 
 /*  Routine to allocate storage on a 2D array
 */
 
-template (typename type)
+template <typename type>
 type **allocate(type ** &v, const int nx, const int ny)
 {
   bigint nbytes = (bigint) sizeof(type) * nx * ny;
