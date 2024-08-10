@@ -46,7 +46,7 @@ void deallocate(type ** &v)
 */
 
 template <typename type>
-type **allocate(type ** &v, const int nx, const int ny)
+type **allocate_column_major(type ** &v, const int nx, const int ny)
 {
   bigint nbytes = (bigint) sizeof(type) * nx * ny;
   type * data = (type *) malloc(nbytes);
@@ -63,17 +63,34 @@ type **allocate(type ** &v, const int nx, const int ny)
 }
 
 template <typename type>
+type **allocate(type ** &v, const int nx, const int ny)
+{
+  bigint nbytes = (bigint) sizeof(type) * nx * ny;
+  type * data = (type *) malloc(nbytes);
+  nbytes = (bigint) sizeof(type *) * nx;
+  v = (type **) malloc(nbytes);
+
+  int n = 0;
+  for (int i = 0; i < nx; i++)
+    {
+      v[i] = &data[n];
+      n += ny;
+    }
+  return v;
+}
+
+template <typename type>
 type **allocate_cpp(type ** &v, const int nx, const int ny)
 {
   int n = nx * ny;
   type * data = new type[n];
-  v = new type* [ny];
+  v = new type* [nx];
   
   int n = 0;
-  for (int j = 0; j < ny; i++)
+  for (int i = 0; i < nx; i++)
     {
-      v[j] = &data[n];
-      n += nx;
+      v[i] = &data[n];
+      n += ny;
     }
   return v;
 }
