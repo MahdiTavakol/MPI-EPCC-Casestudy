@@ -31,76 +31,6 @@
 #include <cmath>
 #include <iomanip>
 
-/*  Routines to allocate/deallocate a contiguous storage on a 2D array
-*/
-
-template <typename type>
-type **allocate(type ** &v, const int nx, const int ny)
-{
-  long int nbytes = (long int) sizeof(type) * nx * ny;
-  type * data = (type *) malloc(nbytes);
-  nbytes = (long int) sizeof(type *) * nx;
-  v = (type **) malloc(nbytes);
-
-  int n = 0;
-  for (int i = 0; i < nx; i++)
-    {
-      v[i] = &data[n];
-      n += ny;
-    }
-  return v;
-}
-
-template <typename type>
-type **allocate_cpp(type ** &v, const int nx, const int ny)
-{
-  int n = nx * ny;
-  type * data = new type[n];
-  v = new type* [nx];
-  
-  n = 0;
-  for (int i = 0; i < nx; i++)
-    {
-      v[i] = &data[n];
-      n += ny;
-    }
-  return v;
-}
-
-template <typename type>
-void deallocate_cpp(type ** &v)
-{
-  if (v== nullptr) return;
-  delete [] v[0];
-  delete v;
-  v = nullptr;
-}
-
-template <typename type>
-type **allocate_row_major(type ** &v, const int nx, const int ny)
-{
-  long int nbytes = (long int) sizeof(type) * nx * ny;
-  type * data = (type *) malloc(nbytes);
-  nbytes = (long int) sizeof(type *) * ny;
-  v = (type **) malloc(nbytes);
-
-  int n = 0;
-  for (int j = 0; j < ny; j++)
-    {
-      v[j] = &data[n];
-      n += nx;
-    }
-  return v;
-}
-
-template <typename type>
-void deallocate(type ** &v)
-{
-  if (v == nullptr) return;
-  free(v[0]);
-  free(v);
-  v = nullptr;
-}
 
 /*
  *  Routine to get the size of a PGM data file
@@ -170,20 +100,30 @@ void pgmread(std::string filename, double ** v, int nx, int ny)
 
   std::getline(file,line); // Maximum greyscale
 
-  for (int j = 0; j < ny; j++)
+  iss.clear();
+  iss.str("");
+  std::getline(file,line);
+  iss << line;
+
+  for (int j = ny-1; j >= 0; j--)
   {
-    std::getline(file,line);
-    iss.clear();
-    iss.str("");
-    iss << line;
+
     for (int i = 0; i < nx ; i++)
     {
+      if (iss.eof())
+      {
+         std::getline(file,line);
+         iss.clear();
+         iss.str("");
+         iss << line;
+      }
       int n;
       iss >> n;
+      double m = (double) n;
       v[i][j] = n;
     }
-  file.close();
   }
+  file.close();
 }
 
 
@@ -212,7 +152,7 @@ void pgmwrite(std::string filename, double **x, int nx, int ny)
     return ;
   }
 
-  cout << "Writing " << nx << " x " << ny << " picture into file:" << filename << std::endl;
+  std::cout << "Writing " << nx << " x " << ny << " picture into file:" << filename << std::endl;
 
 
   /*
@@ -233,8 +173,8 @@ void pgmwrite(std::string filename, double **x, int nx, int ny)
 
   file <<  "P2" << std::endl;
   file << "# Written by pgmio::pgmwrite" << std::endl;
-  file << nx << " "  << ny << std::endl;
-  file <<  thresh << std::endl;
+  file << " " << nx << " "  << ny << std::endl;
+  file << " " << thresh << std::endl;
 
   k = 0;
 
@@ -255,14 +195,14 @@ void pgmwrite(std::string filename, double **x, int nx, int ny)
       fval = thresh*((fabs(tmp)-xmin)/(xmax-xmin))+0.5;
       grey = (int) fval;
 
-      file << std::left << std::setw(6) << grey;
+      file << std::right << std::setw(6) << grey;
 
-      if (0 == (k+1)%18) file << std::endl;
+      if (0 == (k+1)%12) file << std::endl;
 
       k++;
     }
   }
 
-  if (0 != k%18) file << std::endl;
+  if (0 != k%12) file << std::endl;
   file.close();
 }
