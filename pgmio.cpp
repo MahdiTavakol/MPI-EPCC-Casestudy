@@ -61,6 +61,31 @@ type **allocate(type ** &v, const int nx, const int ny)
   return v;
 }
 
+template <typename type>
+type **allocate_cpp(type ** &v, const int nx, const int ny)
+{
+  int n = nx * ny;
+  type * data = new type[n];
+  v = new type* [ny];
+  
+  int n = 0;
+  for (int j = 0; j < ny; i++)
+    {
+      v[j] = &data[n];
+      n += nx;
+    }
+  return v;
+}
+
+template <typename type>
+void deallocate_cpp(type ** &v)
+{
+  if (v== nullptr) return;
+  delete [] v[0];
+  delete v;
+  v = nullptr;
+}
+
 /*
  *  Routine to get the size of a PGM data file
  *
