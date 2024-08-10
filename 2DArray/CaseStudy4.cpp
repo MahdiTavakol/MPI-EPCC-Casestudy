@@ -50,11 +50,13 @@ int main(int argc, char** argv)
         int iteration = iterations[k];
         if (rank == 0) 
             cout << "Starting the iteration " << iteration  << endl;
-        for (int i = 0; i < (Mp+2)*(Np+2) ; i++)
-        {
-            edge[i] = 255;
-            old[i]  = 255;
-        }
+        for (int i = 0; i < Mp+2 ; i++)
+	    for (int j = 0; j < Np+2 ; j++)
+	    {
+		edge[i][j] = 255;
+		old[i][j] = 255;
+	    }
+	    
         if (rank == 0)
         {
             pgmread(filename,masterbuff,M,N);
