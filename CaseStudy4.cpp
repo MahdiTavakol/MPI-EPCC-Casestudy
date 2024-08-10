@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     int N;
     int Mp;
     int Np;
-    double *masterbuff, *buff, *new_ptr, *old, *edge;
+    double **masterbuff, **buff, **new_ptr, **old, **edge;
     std::string filename;
     std::string outputfilename;
 
