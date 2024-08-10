@@ -37,10 +37,11 @@ int main(int argc, char** argv)
     Np = N;
 
     masterbuff = allocate(masterbuff,M,N);
-    buff       = allocate(masterbuff,Mp,Np);
+    buff       = allocate(buff,Mp,Np);
     new_ptr    = allocate(new_ptr,Mp+2,Np+2);
     old        = allocate(old,Mp+2,Np+2);
     edge       = allocate(edge,Mp+2,Np+2);
+    
 
 
     MPI_Barrier(world);
@@ -56,7 +57,8 @@ int main(int argc, char** argv)
 		edge[i][j] = 255;
 		old[i][j] = 255;
 	    }
-	    
+	   
+
         if (rank == 0)
         {
             pgmread(filename,masterbuff,M,N);
