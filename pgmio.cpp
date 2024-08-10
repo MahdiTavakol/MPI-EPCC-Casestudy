@@ -92,7 +92,7 @@ void deallocate_cpp(type ** &v)
  *  Note that this assumes a single line comment and no other white space.
  */
 
-void pgmsize(char *filename, int *nx, int *ny)
+void pgmsize(std::string filename, int *nx, int *ny)
 { 
   std::fstream file;
 
@@ -171,7 +171,7 @@ void pgmread(std::string filename, double ** v, int nx, int ny)
  *  x[nx][ny]. 
  */
 
-void pgmwrite(char *filename, double **x, int nx, int ny)
+void pgmwrite(std::string filename, double **x, int nx, int ny)
 {
   std::fstream file;
   std::string line;
