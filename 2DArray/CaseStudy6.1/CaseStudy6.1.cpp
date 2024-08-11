@@ -6,23 +6,24 @@
 using namespace std;
 
 template <typename type>
-type distance(type** a, type **b, const int& size)
+type distance(type** a, type **b, const int& m, const int& n)
 {
     type dist = 0.0;
-    for (int i = 0; i < size; i++)
-        for (int j = 0; j < size; j++)
+    for (int i = 1; i < m-1; i++)
+        for (int j = 1; j < n-1; j++)
             dist += (a[i][j] - b[i][j])*(a[i][j] - b[i][j]);
     return sqrt(dist);
 }
 
 template <typename type>
-type calc_delta(type **a, type **b, const int& size)
+type calc_delta(type **a, type **b, const int& m, const int& n)
 {
     type dist = 0.0;
-    for (int i = 0; i < size; i++)
-        for (int j = 0; j < size; j++)
+    type dist_ij;
+    for (int i = 1; i < m-1; i++)
+        for (int j = 1; j < n-1; j++)
         {
-             type dist_ij = abs(a[i][j] - b[i][j]);
+             dist_ij = abs(a[i][j] - b[i][j]);
              if (dist_ij > dist)
                   dist = dist_ij;
         }
@@ -32,7 +33,7 @@ type calc_delta(type **a, type **b, const int& size)
 int main(int argc, char** argv)
 {
     int maxiteration = 2000000;
-    double maxdelta = 0.001; //0.1 0.01 0.001 0.0001 0.00001
+    double maxdelta = 0.1; //0.1 0.01 0.001 0.0001 0.00001
     int lastloop;
     int M;
     int N;
@@ -120,7 +121,7 @@ int main(int argc, char** argv)
                 }
                 
             
-            double delta = calc_delta(old,new_ptr,Mp+2);
+            double delta = calc_delta<double>(old,new_ptr,Mp+2,Np+2);
             // Maximum change in the value
             if (l > 0)
             {
